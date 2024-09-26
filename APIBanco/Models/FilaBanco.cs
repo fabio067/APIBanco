@@ -16,49 +16,28 @@ namespace BibliotecaDeClasses
 
         public void AdicionarCliente(string nome, int idade)
         {
-            var novoCliente = new Cliente { Nome = nome, Idade = idade };
+            var novoCliente = new Cliente { Nome = nome, Idade = idade, Id = ultimoId++ }; // Gera um ID único para cada cliente
 
-            
-            // Se a idade for maior que 40, insere no início e incrementa os IDs dos demais
+            // Se a idade for maior que 40, insere no início da fila, senão insere no final
             if (idade > 40)
             {
-                clientes.Insert(0, novoCliente);
-                novoCliente.Id = 0;
-                for (int i = 1; i < clientes.Count; i++)
-                {
-                    clientes[i].Id++;
-                }
+                clientes.Insert(0, novoCliente); // Atendimento preferencial (início da fila)
             }
             else
             {
-                // Insere no final e atribui o próximo ID
-                novoCliente.Id = ultimoId++;
-                clientes.Add(novoCliente);
+                clientes.Add(novoCliente); // Atendimento comum (final da fila)
             }
         }
+
         private ClientesAtendidos clientesAtendidos = new ClientesAtendidos();
-        public void ConsultarClientesAtendidos()
-        {
-            clientesAtendidos.ConsultarClientesAtendidos();
-        }
 
         public void RemoverCliente()
         {
-
             if (clientes.Count > 0)
             {
-
-
-                // Remove o primeiro cliente da fila (menor ID)
+                // Remove o primeiro cliente da fila
                 var clienteRemovido = clientes[0];
                 clientes.RemoveAt(0);
-
-                // Ajusta os IDs dos clientes restantes
-                for (int i = 0; i < clientes.Count; i++)
-                {
-                    clientes[i].Id = i;
-                }
-
 
                 // Adiciona o cliente removido à lista de clientes atendidos
                 clientesAtendidos.AdicionarClienteAtendido(clienteRemovido);
@@ -71,9 +50,7 @@ namespace BibliotecaDeClasses
 
         public List<Cliente> ConsultarFila()
         {
-            // Ordena a lista por ID de forma crescente
-            var filaOrdenada = clientes.OrderBy(cliente => cliente.Id).ToList();
-            return filaOrdenada;
+            return clientes; // Retorna a lista de clientes na ordem atual da fila
         }
 
         public ClientesAtendidos ClientesAtendidos { get; private set; } = new ClientesAtendidos();
